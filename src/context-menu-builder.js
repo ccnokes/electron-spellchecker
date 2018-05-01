@@ -1,7 +1,7 @@
-import {clipboard, nativeImage, remote, shell} from 'electron';
-import {truncateString, matchesWord} from './utility';
+import { clipboard, nativeImage, remote, shell } from 'electron';
+import { truncateString, matchesWord } from './utility';
 
-const {Menu, MenuItem} = remote;
+const { Menu, MenuItem } = remote;
 
 let d = require('debug')('electron-spellchecker:context-menu-builder');
 
@@ -34,14 +34,17 @@ export default class ContextMenuBuilder {
    * @param  {SpellCheckHandler} spellCheckHandler  The spell checker to generate
    *                                                recommendations for.
    * @param  {BrowserWindow|WebView} windowOrWebView  The hosting window/WebView
-   * @param  {Boolean} debugMode    If true, display the "Inspect Element" menu item.
-   * @param  {function} processMenu If passed, this method will be passed the menu to change
-   *                                it prior to display. Signature: (menu, info) => menu
    */
-  constructor(spellCheckHandler, windowOrWebView=null, debugMode=false, processMenu=(m) => m) {
+  constructor(spellCheckHandler, windowOrWebView=null, options = {}) {
     this.spellCheckHandler = spellCheckHandler;
-    this.debugMode = debugMode;
-    this.processMenu = processMenu;
+    Object.assign(options, {
+      processMenu(m) { return m },
+      debugMode: false,
+      suggestionLimit: 6
+    });
+    this.debugMode = options.debugMode || false;
+    this.processMenu = options.processMenu;
+    this.options = options;
     this.menu = null;
     this.stringTable = Object.assign({}, contextMenuStringTable);
 
@@ -236,7 +239,8 @@ export default class ContextMenuBuilder {
     let corrections = await this.spellCheckHandler.getCorrectionsForMisspelling(menuInfo.misspelledWord);
 
     if (corrections && corrections.length) {
-      corrections.forEach((correction) => {
+      let correctionsSlice = this.options.suggestionLimit ? corrections.slice(0, this.options.suggestionLimit) : corrections;
+      correctionsSlice.forEach((correction) => {
         let item = new MenuItem({
           label: correction,
           click: () => target.replaceMisspelling(correction)

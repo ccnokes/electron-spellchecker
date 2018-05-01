@@ -1,10 +1,6 @@
-import {remote} from 'electron';
-import { Observable } from 'rxjs/Observable';
+import { remote } from 'electron';
 import { Subscription } from 'rxjs/Subscription';
-import { fromRemoteWindow } from 'electron-remote';
-
-import 'rxjs/add/observable/fromEvent';
-import 'rxjs/add/operator/map';
+import { fromRemoteWindow } from 'electron-remote'; // TODO remove this dependency
 
 let d = require('debug')('electron-spellchecker:context-menu-listener');
 

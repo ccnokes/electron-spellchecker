@@ -1,6 +1,5 @@
 import ContextMenuBuilder from './context-menu-builder';
 import ContextMenuListener from './context-menu-listener';
-import DictionarySync from './dictionary-sync';
 import SpellCheckHandler from './spell-check-handler';
 import SpellChecker from './node-spellchecker';
 
@@ -20,7 +19,6 @@ function setGlobalLogger(fn) {
 module.exports = {
   ContextMenuBuilder,
   ContextMenuListener,
-  DictionarySync,
   SpellCheckHandler,
   SpellChecker,
   setGlobalLogger,

@@ -1,14 +1,15 @@
-window.ItWorked = true;
-
+const { remote } = require('electron');
 const SpellCheckHandler = require('../lib/spell-check-handler').default;
 const ContextMenuListener = require('../lib/context-menu-listener').default;
 const ContextMenuBuilder = require('../lib/context-menu-builder').default;
 
-window.spellCheckHandler = new SpellCheckHandler();
-setTimeout(() => window.spellCheckHandler.attachToInput(), 1000);
+const spellCheckHandler = new SpellCheckHandler();
 
-window.spellCheckHandler.provideHintText('This is probably the language that you want to check in');
-window.spellCheckHandler.autoUnloadDictionariesOnBlur();
+const contextMenuBuilder = new ContextMenuBuilder(spellCheckHandler);
+const contextMenuListener = new ContextMenuListener((info) => {
+  contextMenuBuilder.showPopupMenu(info);
+});
 
-window.contextMenuBuilder = new ContextMenuBuilder(window.spellCheckHandler, null, true);
-window.contextMenuListener = new ContextMenuListener((info) => { window.contextMenuBuilder.showPopupMenu(info); });
+spellCheckHandler.init();
+
+remote.getCurrentWebContents().openDevTools();
